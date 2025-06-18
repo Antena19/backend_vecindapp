@@ -92,10 +92,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<REST_VECINDAPP.Seguridad.VerificadorRoles>();
 
-// Configurar el puerto 8080
+// Configurar el puerto dinámico para Railway
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.ListenAnyIP(8080);
+    serverOptions.ListenAnyIP(int.Parse(port));
 });
 
 // Agregar el servicio de almacenamiento de archivos
