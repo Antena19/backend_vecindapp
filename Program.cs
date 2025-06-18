@@ -17,8 +17,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder
-            .WithOrigins("http://localhost:8100", "https://tudominio.com", "http://localhost:4200",
-                "capacitor://localhost") // URL de tu app Ionic
+            .WithOrigins("http://localhost:8100", "https://tudominio.com",
+                "capacitor://localhost", "http://localhost:4200") 
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
@@ -66,6 +66,8 @@ builder.Services.AddScoped<cn_Directiva>();
 builder.Services.AddScoped<cn_Certificados>();
 builder.Services.AddScoped<cn_MercadoPago>();
 builder.Services.AddScoped<cn_Eventos>();
+builder.Services.AddScoped<TransbankService>();
+builder.Services.AddScoped<WebpayService>();
 
 // Configurar la autenticacin con JWT
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key no est� configurado"));
@@ -88,6 +90,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<REST_VECINDAPP.Seguridad.VerificadorRoles>();
+
+// Configurar el puerto 8080
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(8080);
+});
+
 // Agregar el servicio de almacenamiento de archivos
 builder.Services.AddScoped<FileStorageService>();
 // Configurar el tama�o m�ximo de archivos (opcional)
@@ -122,5 +131,13 @@ app.MapControllers();
 
 // Agregar soporte para archivos est�ticos
 app.UseStaticFiles();
+
+// Agregar endpoint de healthcheck
+app.MapGet("/", () => Results.Ok("API is healthy"));
+
+// Redirigir POST /payment/return a GET /payment/return para soporte de Webpay
+app.MapPost("/payment/return", async context => {
+    context.Response.Redirect("/payment/return");
+});
 
 app.Run();
