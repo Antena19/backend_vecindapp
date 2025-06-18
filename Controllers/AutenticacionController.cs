@@ -260,7 +260,7 @@ namespace REST_VECINDAPP.Controllers
                         {
                             rut = usuario.rut,
                             nombre = usuario.nombre,
-                            apellido = usuario.apellido,
+                            apellido = usuario.apellido_paterno,
                             tipo_usuario = usuario.tipo_usuario
                         }
                     });
