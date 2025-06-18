@@ -126,8 +126,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 app.UseCors(); // Usar la política por defecto (permisiva)
-app.UseHttpsRedirection();
-app.UseAuthentication();  // Primero autenticaci�n
+// app.UseHttpsRedirection(); // Desactivado para evitar redirección a HTTPS en local y Railway
+app.UseAuthentication();  // Primero autenticacin
 app.UseAuthorization();   // Luego autorizaci�n
 app.MapControllers();
 
