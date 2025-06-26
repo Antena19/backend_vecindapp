@@ -74,7 +74,8 @@ builder.Services.AddScoped<TransbankServiceV2>();
 builder.Services.AddScoped<WebpayService>();
 
 // Configurar la autenticacin con JWT
-var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT_KEY"] ?? throw new InvalidOperationException("JWT_KEY no está configurado en las variables de entorno."));
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
