@@ -150,11 +150,6 @@ app.MapPost("/payment/return", async context => {
     context.Response.Redirect("/payment/return");
 });
 
-app.MapGet("/env", () =>
-{
-    var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
-    return Results.Ok(jwtKey ?? "JWT_KEY no está definida");
-});
 
 
 app.Run();
