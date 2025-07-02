@@ -61,6 +61,21 @@ namespace REST_VECINDAPP.Controllers
                 await _transbankService.GuardarResultadoPago(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
                 await _transbankService.GuardarPagoEnHistorial(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
 
+                // NUEVO: Si el pago fue exitoso, aprobar el certificado automáticamente
+                if (result.Status.ToLower() == "authorized")
+                {
+                    // Buscar la solicitud asociada al token
+                    var solicitudService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
+                    if (solicitudService != null)
+                    {
+                        var solicitud = await solicitudService.ObtenerSolicitudPorTokenWebpay(request.Token);
+                        if (solicitud != null)
+                        {
+                            await solicitudService.AprobarCertificadoAutomatico(solicitud.Id);
+                        }
+                    }
+                }
+
                 if (result.Status.ToLower() != "authorized")
                 {
                     var htmlRechazo = $@"
