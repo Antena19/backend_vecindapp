@@ -71,7 +71,9 @@ namespace REST_VECINDAPP.Controllers
                             <p><strong>Monto:</strong> ${result.Amount}</p>
                             <p><strong>Estado:</strong> {result.Status}</p>
                             <br>
-                            <p><a href='http://localhost:8100/payment/error'>Volver al sitio</a></p>
+                            <!--<p><a href='http://localhost:8100/payment/error'>Volver al sitio</a></p>-->
+                            <p style='color: #b71c1c; font-weight: bold;'>El pago no fue exitoso.</p>
+                            <p>Por favor, vuelve a la aplicación para intentarlo nuevamente o revisar el estado de tu certificado.</p>
                         </body>
                     </html>";
                     return Content(htmlRechazo, "text/html");
@@ -80,7 +82,7 @@ namespace REST_VECINDAPP.Controllers
                 var htmlExito = $@"
                 <html>
                     <head>
-                        <meta http-equiv='refresh' content='5;url=http://localhost:8100/payment/final' />
+                        <!--<meta http-equiv='refresh' content='5;url=http://localhost:8100/payment/final' />-->
                     </head>
                     <body style='font-family: sans-serif; text-align: center; padding-top: 50px;'>
                         <h2>✅ ¡Pago confirmado!</h2>
@@ -89,7 +91,10 @@ namespace REST_VECINDAPP.Controllers
                         <p><strong>Monto:</strong> ${result.Amount}</p>
                         <p><strong>Estado:</strong> {result.Status}</p>
                         <br>
-                        <p>Serás redirigido automáticamente. Si no, haz clic <a href='http://localhost:8100/payment/final'>aquí</a>.</p>
+                        <!--<p>Serás redirigido automáticamente. Si no, haz clic <a href='http://localhost:8100/payment/final'>aquí</a>.</p>-->
+                        <p style='color: #388e3c; font-weight: bold;'>Tu pago fue procesado correctamente.</p>
+                        <p>Ahora puedes volver a la aplicación para descargar tu certificado de residencia.</p>
+                        <p style='font-size: 0.9em; color: #888;'>Puedes cerrar esta ventana y regresar a la app.</p>
                     </body>
                 </html>";
                 return Content(htmlExito, "text/html");
