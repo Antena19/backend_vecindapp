@@ -64,22 +64,14 @@ namespace REST_VECINDAPP.Controllers
                 await _transbankService.GuardarResultadoPago(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
                 await _transbankService.GuardarPagoEnHistorial(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
 
-                // NUEVO: Si el pago fue exitoso, confirma el pago y genera el certificado igual que en el endpoint de certificados
+                // NUEVO: Si el pago fue exitoso, confirma el pago y genera el certificado directamente
                 if (result.Status.ToLower() == "authorized")
                 {
-                    var httpClient = new HttpClient();
-                    var baseUrl = _configuration["BaseUrl"] ?? "http://localhost:5000";
-                    var confirmUrl = $"{baseUrl}/api/Certificados/pago/confirmar";
-                    var payload = new { Token = request.Token };
-                    var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-
-                    // Reintento simple: intenta hasta 3 veces con un pequeño delay
-                    for (int i = 0; i < 3; i++)
+                    // Lógica directa, sin HTTP interno ni doble commit
+                    var certificadosService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
+                    if (certificadosService != null)
                     {
-                        var response = await httpClient.PostAsync(confirmUrl, content);
-                        if (response.IsSuccessStatusCode)
-                            break;
-                        await Task.Delay(1000); // Espera 1 segundo antes de reintentar
+                        await certificadosService.ConfirmarPago(request.Token, "aprobado");
                     }
                 }
 
