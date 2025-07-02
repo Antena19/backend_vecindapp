@@ -403,8 +403,8 @@ namespace REST_VECINDAPP.CapaNegocios
 
                 // 2. Definir rutas a las imágenes (ajusta si es necesario)
                 string basePath = Directory.GetCurrentDirectory();
-                string logoPath = Path.Combine(basePath, "..", "..", "FRONTEND", "src", "assets", "images", "logo-junta.png");
-                string firmaPath = Path.Combine(basePath, "..", "..", "FRONTEND", "src", "assets", "images", "firma-presidente.jpg");
+                string logoPath = Path.Combine(basePath, "wwwroot", "logo-junta.png");
+                string firmaPath = Path.Combine(basePath, "wwwroot", "firma-presidente.jpg");
 
                 if (!File.Exists(logoPath))
                 {
