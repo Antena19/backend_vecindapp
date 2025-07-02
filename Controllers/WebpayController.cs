@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Transbank.Common;
 using REST_VECINDAPP.Servicios;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace REST_VECINDAPP.Controllers
 {
@@ -64,11 +67,19 @@ namespace REST_VECINDAPP.Controllers
                 // NUEVO: Si el pago fue exitoso, confirma el pago y genera el certificado igual que en el endpoint de certificados
                 if (result.Status.ToLower() == "authorized")
                 {
-                    var certificadosService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
-                    if (certificadosService != null)
+                    var httpClient = new HttpClient();
+                    var baseUrl = _configuration["BaseUrl"] ?? "http://localhost:5000";
+                    var confirmUrl = $"{baseUrl}/api/Certificados/pago/confirmar";
+                    var payload = new { Token = request.Token };
+                    var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+                    // Reintento simple: intenta hasta 3 veces con un pequeño delay
+                    for (int i = 0; i < 3; i++)
                     {
-                        // Esto actualiza el estado del pago, la transacción, la solicitud y genera el certificado y PDF
-                        await certificadosService.ConfirmarPago(request.Token, "aprobado");
+                        var response = await httpClient.PostAsync(confirmUrl, content);
+                        if (response.IsSuccessStatusCode)
+                            break;
+                        await Task.Delay(1000); // Espera 1 segundo antes de reintentar
                     }
                 }
 
