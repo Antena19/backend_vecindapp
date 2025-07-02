@@ -653,10 +653,8 @@ namespace REST_VECINDAPP.CapaNegocios
                 var updateSolicitudResult = await commandUpdateSolicitud.ExecuteNonQueryAsync();
                 Console.WriteLine($"[LOG] Actualización de pago_id en solicitud. Filas afectadas: {updateSolicitudResult}");
 
-                if (updatePagoResult > 0 && updateTransaccionResult > 0)
                 {
-                    Console.WriteLine("[LOG] Estados actualizados correctamente, procediendo con la aprobación del certificado");
-                    
+                    Console.WriteLine("[LOG] Estados actualizados (o ya estaban actualizados), procediendo con la aprobación del certificado");
                     // Si el pago se confirmó exitosamente, aprobamos el certificado automáticamente
                     var aprobacionExitosa = await AprobarCertificadoAutomatico(solicitudId);
                     if (!aprobacionExitosa)
@@ -666,7 +664,6 @@ namespace REST_VECINDAPP.CapaNegocios
                     }
 
                     Console.WriteLine("[LOG] Certificado aprobado, procediendo con la generación del PDF");
-                    
                     // Generamos el PDF del certificado
                     var (exitoGeneracion, mensajeGeneracion) = await GenerarPDFCertificado(solicitudId);
                     if (!exitoGeneracion)
@@ -678,9 +675,6 @@ namespace REST_VECINDAPP.CapaNegocios
                     Console.WriteLine("[LOG] Proceso de confirmación de pago completado exitosamente");
                     return true;
                 }
-
-                Console.WriteLine("[ERROR] No se pudieron actualizar los estados del pago");
-                return false;
             }
             catch (Exception ex)
             {
