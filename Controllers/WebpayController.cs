@@ -71,7 +71,7 @@ namespace REST_VECINDAPP.Controllers
                     var certificadosService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
                     if (certificadosService != null)
                     {
-                        await certificadosService.ConfirmarPago(request.Token, "aprobado");
+                        await certificadosService.ConfirmarPago(request.Token, "AUTHORIZED");
                     }
                 }
 
