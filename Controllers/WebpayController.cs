@@ -204,6 +204,49 @@ namespace REST_VECINDAPP.Controllers
                 message = resultado.Mensaje
             });
         }
+
+        [HttpGet("commit")]
+        public async Task<IActionResult> CommitTransactionGet([FromQuery] string token_ws)
+        {
+            try
+            {
+                var options = new Options(
+                    _configuration["Transbank:CommerceCode"],
+                    _configuration["Transbank:ApiKey"],
+                    WebpayIntegrationType.Test
+                );
+                var transaction = new Transaction(options);
+                var result = transaction.Commit(token_ws);
+                // Guardar resultado en base de datos
+                await _transbankService.GuardarResultadoPago(token_ws, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
+                await _transbankService.GuardarPagoEnHistorial(token_ws, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
+
+                // Si el pago fue exitoso, confirma el pago y genera el certificado directamente
+                if (result.Status.ToLower() == "authorized")
+                {
+                    var certificadosService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
+                    if (certificadosService != null)
+                    {
+                        await certificadosService.ConfirmarPago(token_ws, "AUTHORIZED");
+                    }
+                }
+                // Redirigir a la página final con los parámetros
+                return Redirect($"/payment/final?status={result.Status}&token={token_ws}");
+            }
+            catch (Exception ex)
+            {
+                var htmlError = $@"
+                <html>
+                    <body style='font-family: sans-serif; text-align: center; padding-top: 50px;'>
+                        <h2>❌ Error al procesar el pago</h2>
+                        <p>Ocurrió un problema al confirmar el pago.</p>
+                        <p><strong>Mensaje:</strong> {ex.Message}</p>
+                        <p><a href='/payment/final'>Volver al sitio</a></p>
+                    </body>
+                </html>";
+                return Content(htmlError, "text/html");
+            }
+        }
     }
 
     public class StatusRequest
