@@ -61,18 +61,14 @@ namespace REST_VECINDAPP.Controllers
                 await _transbankService.GuardarResultadoPago(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
                 await _transbankService.GuardarPagoEnHistorial(request.Token, result.Status, Convert.ToDecimal(result.Amount ?? 0), result.BuyOrder);
 
-                // NUEVO: Si el pago fue exitoso, aprobar el certificado automáticamente
+                // NUEVO: Si el pago fue exitoso, confirma el pago y genera el certificado igual que en el endpoint de certificados
                 if (result.Status.ToLower() == "authorized")
                 {
-                    // Buscar la solicitud asociada al token
-                    var solicitudService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
-                    if (solicitudService != null)
+                    var certificadosService = HttpContext.RequestServices.GetService(typeof(REST_VECINDAPP.CapaNegocios.cn_Certificados)) as REST_VECINDAPP.CapaNegocios.cn_Certificados;
+                    if (certificadosService != null)
                     {
-                        var solicitud = await solicitudService.ObtenerSolicitudPorTokenWebpay(request.Token);
-                        if (solicitud != null)
-                        {
-                            await solicitudService.AprobarCertificadoAutomatico(solicitud.Id);
-                        }
+                        // Esto actualiza el estado del pago, la transacción, la solicitud y genera el certificado y PDF
+                        await certificadosService.ConfirmarPago(request.Token, "aprobado");
                     }
                 }
 
