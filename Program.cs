@@ -72,6 +72,7 @@ builder.Services.AddScoped<cn_Eventos>();
 builder.Services.AddScoped<cn_Comunicacion>();
 builder.Services.AddScoped<TransbankServiceV2>();
 builder.Services.AddScoped<WebpayService>();
+builder.Services.AddScoped<REST_VECINDAPP.Servicios.TransbankService>();
 
 // Configurar la autenticacin con JWT
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
