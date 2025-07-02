@@ -156,6 +156,10 @@ app.MapGet("/payment/final", (HttpRequest request) =>
 {
     var status = request.Query["status"].ToString();
     var token = request.Query["token"].ToString();
+    if (string.IsNullOrEmpty(token))
+    {
+        token = request.Query["token_ws"].ToString();
+    }
     return Results.Content($@"<html>
         <body style='font-family: sans-serif; text-align: center; padding-top: 50px;'>
             <h2>✅ ¡Pago procesado!</h2>
