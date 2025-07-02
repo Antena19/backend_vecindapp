@@ -10,6 +10,7 @@ using System.IO;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using iText.Kernel.Colors;
 
 namespace REST_VECINDAPP.CapaNegocios
 {
@@ -374,7 +375,8 @@ namespace REST_VECINDAPP.CapaNegocios
                         u.nombre,
                         u.apellido_paterno,
                         u.apellido_materno,
-                        u.rut
+                        u.rut,
+                        u.direccion
                     FROM solicitudes_certificado s
                     JOIN certificados c ON s.id = c.solicitud_id
                     JOIN usuarios u ON s.usuario_rut = u.rut
@@ -396,7 +398,8 @@ namespace REST_VECINDAPP.CapaNegocios
                     Nombres = reader.GetString("nombre"),
                     Apellidos = $"{reader.GetString("apellido_paterno")} {reader.GetString("apellido_materno")}".Trim(),
                     Rut = reader.GetInt32("rut"),
-                    Motivo = reader.IsDBNull("motivo") ? "No especificado" : reader.GetString("motivo")
+                    Motivo = reader.IsDBNull("motivo") ? "No especificado" : reader.GetString("motivo"),
+                    Direccion = reader.IsDBNull("direccion") ? "" : reader.GetString("direccion")
                 };
                 await reader.CloseAsync();
 
@@ -441,7 +444,7 @@ namespace REST_VECINDAPP.CapaNegocios
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
                     .SetFontSize(22)
                     .SetBold()
-                    .SetFontColor(iText.Kernel.Colors.ColorConstants.Teal)
+                    .SetFontColor(new DeviceRgb(0, 137, 123))
                     .SetMarginBottom(10);
                 document.Add(titulo);
 
@@ -458,9 +461,12 @@ namespace REST_VECINDAPP.CapaNegocios
                     .Add("La Junta de Vecinos Portal de Puerto Montt, RUT: 65.066.453 – 1, Personalidad Juridica N°3849 con foja 3850, constituida el 13 de marzo 2013 en Puerto Montt, perteneciente a la unidad N° 20 con facultad que otorga la Ley N°19.418 en el artículo 43 certifica que:\n\n")
                     .Add("Sr.(a): ").Add(new Text($"{data.Nombres} {data.Apellidos}").SetBold()).Add("\n")
                     .Add("RUT: ").Add(new Text($"{data.Rut}").SetBold()).Add("\n")
-                    .Add("Reside en: ").Add(new Text($"{direccion}").SetBold()).Add("\n")
-                    .Add(string.IsNullOrEmpty(data.Motivo) ? "" : new Text($"Motivo: {data.Motivo}\n\n").SetBold())
-                    .Add("Se extiende el presente documento para ser presentado en la institución que lo requiera.\n\n")
+                    .Add("Reside en: ").Add(new Text($"{data.Direccion}").SetBold()).Add("\n");
+                if (!string.IsNullOrEmpty(data.Motivo))
+                {
+                    cuerpo.Add("Motivo: ").Add(new Text(data.Motivo).SetBold()).Add("\n\n");
+                }
+                cuerpo.Add("Se extiende el presente documento para ser presentado en la institución que lo requiera.\n\n")
                     .Add(new Text("Ley 20.718 de 02 de enero 2014").SetBold())
                     .Add(" faculta a las juntas de vecinos a emitir certificados de residencia, siéndole aplicable al requirente que faltare a la verdad cuanto a los datos proporcionados al efecto, las sanciones contempladas en el artículo 212 del código penal.")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.JUSTIFIED)
@@ -478,7 +484,7 @@ namespace REST_VECINDAPP.CapaNegocios
                 var nombrePresidente = new Paragraph("Presidente Junta de Vecinos")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
                     .SetFontSize(11)
-                    .SetFontColor(iText.Kernel.Colors.ColorConstants.Teal)
+                    .SetFontColor(new DeviceRgb(0, 137, 123))
                     .SetBold();
                 document.Add(nombrePresidente);
 
