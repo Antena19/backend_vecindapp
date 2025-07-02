@@ -73,6 +73,8 @@ namespace REST_VECINDAPP.Controllers
                     {
                         await certificadosService.ConfirmarPago(request.Token, "AUTHORIZED");
                     }
+                    // Redirección HTTP real a la página final con los parámetros
+                    return Redirect($"/payment/final?status={result.Status}&token={request.Token}");
                 }
 
                 if (result.Status.ToLower() != "authorized")
@@ -97,7 +99,7 @@ namespace REST_VECINDAPP.Controllers
                 var htmlExito = $@"
                 <html>
                     <head>
-                        <!--<meta http-equiv='refresh' content='5;url=http://localhost:8100/payment/final' />-->
+                        <meta http-equiv='refresh' content='0;url=/payment/final?status={result.Status}&token={request.Token}' />
                     </head>
                     <body style='font-family: sans-serif; text-align: center; padding-top: 50px;'>
                         <h2>✅ ¡Pago confirmado!</h2>
@@ -107,7 +109,6 @@ namespace REST_VECINDAPP.Controllers
                         <p><strong>Estado:</strong> {result.Status}</p>
                         <p><strong>Token:</strong> {request.Token}</p>
                         <br>
-                        <!--<p>Serás redirigido automáticamente. Si no, haz clic <a href='http://localhost:8100/payment/final'>aquí</a>.</p>-->
                         <p style='color: #388e3c; font-weight: bold;'>Tu pago fue procesado correctamente.</p>
                         <p>Ahora puedes volver a la aplicación para descargar tu certificado de residencia.</p>
                         <p style='font-size: 0.9em; color: #888;'>Puedes cerrar esta ventana y regresar a la app.</p>
