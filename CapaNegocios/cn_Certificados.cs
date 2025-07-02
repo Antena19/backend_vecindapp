@@ -429,62 +429,65 @@ namespace REST_VECINDAPP.CapaNegocios
                 using var document = new Document(pdf);
                 document.SetMargins(40, 40, 40, 40);
 
-                // Encabezado con logo
-                var logo = new Image(iText.IO.Image.ImageDataFactory.Create(logoPath)).ScaleToFit(100, 100).SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.CENTER);
+                // Logo
+                var logo = new Image(iText.IO.Image.ImageDataFactory.Create(logoPath))
+                    .ScaleToFit(120, 120)
+                    .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.CENTER)
+                    .SetMarginBottom(10);
                 document.Add(logo);
 
-                // Título
+                // Título (mayúsculas, color teal)
                 var titulo = new Paragraph("CERTIFICADO DE RESIDENCIA")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
                     .SetFontSize(22)
                     .SetBold()
-                    .SetMarginTop(15);
+                    .SetFontColor(iText.Kernel.Colors.ColorConstants.Teal)
+                    .SetMarginBottom(10);
                 document.Add(titulo);
 
-                // Cuerpo del certificado
-                var cuerpo = new Paragraph($"La Junta de Vecinos 'Villa El Abrazo de Maipú', certifica que Don/Doña {data.Nombres} {data.Apellidos}, RUT {data.Rut}, tiene domicilio en la comuna de Maipú.")
+                // Subtítulo con ciudad y fecha
+                var fechaFormateada = data.FechaEmision.ToString("d 'de' MMMM yyyy", new System.Globalization.CultureInfo("es-CL"));
+                var subtitulo = new Paragraph($"PUERTO MONTT, {fechaFormateada}.")
+                    .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
+                    .SetFontSize(13)
+                    .SetMarginBottom(18);
+                document.Add(subtitulo);
+
+                // Cuerpo principal (formato normal, datos en negrita)
+                var cuerpo = new Paragraph()
+                    .Add("La Junta de Vecinos Portal de Puerto Montt, RUT: 65.066.453 – 1, Personalidad Juridica N°3849 con foja 3850, constituida el 13 de marzo 2013 en Puerto Montt, perteneciente a la unidad N° 20 con facultad que otorga la Ley N°19.418 en el artículo 43 certifica que:\n\n")
+                    .Add("Sr.(a): ").Add(new Text($"{data.Nombres} {data.Apellidos}").SetBold()).Add("\n")
+                    .Add("RUT: ").Add(new Text($"{data.Rut}").SetBold()).Add("\n")
+                    .Add("Reside en: ").Add(new Text($"{direccion}").SetBold()).Add("\n")
+                    .Add(string.IsNullOrEmpty(data.Motivo) ? "" : new Text($"Motivo: {data.Motivo}\n\n").SetBold())
+                    .Add("Se extiende el presente documento para ser presentado en la institución que lo requiera.\n\n")
+                    .Add(new Text("Ley 20.718 de 02 de enero 2014").SetBold())
+                    .Add(" faculta a las juntas de vecinos a emitir certificados de residencia, siéndole aplicable al requirente que faltare a la verdad cuanto a los datos proporcionados al efecto, las sanciones contempladas en el artículo 212 del código penal.")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.JUSTIFIED)
                     .SetFontSize(12)
-                    .SetMarginTop(30)
-                    .SetMarginBottom(30);
+                    .SetMarginBottom(40);
                 document.Add(cuerpo);
 
-                var motivo = new Paragraph($"El presente certificado se extiende para ser presentado ante: {data.Motivo}.")
-                    .SetTextAlignment(iText.Layout.Properties.TextAlignment.JUSTIFIED)
-                    .SetFontSize(12)
-                    .SetMarginBottom(50);
-                document.Add(motivo);
+                // Firma del presidente
+                var firma = new Image(iText.IO.Image.ImageDataFactory.Create(firmaPath))
+                    .ScaleToFit(80, 40)
+                    .SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.CENTER)
+                    .SetMarginBottom(5);
+                document.Add(firma);
 
-                // Firma
-                var firma = new Image(iText.IO.Image.ImageDataFactory.Create(firmaPath)).ScaleToFit(150, 75).SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.CENTER);
-                var nombrePresidente = new Paragraph("Juan Pérez\nPresidente\nJunta de Vecinos 'Villa El Abrazo'")
+                var nombrePresidente = new Paragraph("Presidente Junta de Vecinos")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER)
                     .SetFontSize(11)
-                    .SetMarginTop(5);
-                 document.Add(firma);
-                 document.Add(nombrePresidente);
+                    .SetFontColor(iText.Kernel.Colors.ColorConstants.Teal)
+                    .SetBold();
+                document.Add(nombrePresidente);
 
-                // Pie de página con código de validación
-                var pieDePagina = new Div()
-                    .SetFixedPosition(40, 40, 515) // Ajusta la posición según tus márgenes
-                    .SetWidth(515)
-                    .SetMarginTop(20);
-
-                var tablaPie = new Table(2, true);
-                
-                var fechaEmision = new Paragraph($"Fecha: {data.FechaEmision:dd-MM-yyyy}")
-                    .SetTextAlignment(iText.Layout.Properties.TextAlignment.LEFT)
-                    .SetFontSize(10);
-
-                var codigoVerificacion = new Paragraph($"Código: {data.CodigoVerificacion}")
+                // Pie de página con fecha y código de verificación
+                var pie = new Paragraph($"Fecha: {data.FechaEmision:dd-MM-yyyy}        Código: {data.CodigoVerificacion}")
                     .SetTextAlignment(iText.Layout.Properties.TextAlignment.RIGHT)
-                    .SetFontSize(10);
-
-                tablaPie.AddCell(new Cell().Add(fechaEmision).SetBorder(iText.Layout.Borders.Border.NO_BORDER));
-                tablaPie.AddCell(new Cell().Add(codigoVerificacion).SetBorder(iText.Layout.Borders.Border.NO_BORDER));
-                
-                pieDePagina.Add(tablaPie);
-                document.Add(pieDePagina);
+                    .SetFontSize(10)
+                    .SetMarginTop(30);
+                document.Add(pie);
 
                 document.Close();
                 
