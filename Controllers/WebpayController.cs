@@ -84,6 +84,7 @@ namespace REST_VECINDAPP.Controllers
                             <p><strong>Orden:</strong> {result.BuyOrder}</p>
                             <p><strong>Monto:</strong> ${result.Amount}</p>
                             <p><strong>Estado:</strong> {result.Status}</p>
+                            <p><strong>Token:</strong> {request.Token}</p>
                             <br>
                             <!--<p><a href='http://localhost:8100/payment/error'>Volver al sitio</a></p>-->
                             <p style='color: #b71c1c; font-weight: bold;'>El pago no fue exitoso.</p>
@@ -104,6 +105,7 @@ namespace REST_VECINDAPP.Controllers
                         <p><strong>Orden:</strong> {result.BuyOrder}</p>
                         <p><strong>Monto:</strong> ${result.Amount}</p>
                         <p><strong>Estado:</strong> {result.Status}</p>
+                        <p><strong>Token:</strong> {request.Token}</p>
                         <br>
                         <!--<p>Serás redirigido automáticamente. Si no, haz clic <a href='http://localhost:8100/payment/final'>aquí</a>.</p>-->
                         <p style='color: #388e3c; font-weight: bold;'>Tu pago fue procesado correctamente.</p>
