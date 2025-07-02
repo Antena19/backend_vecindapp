@@ -151,6 +151,17 @@ app.MapPost("/payment/return", async context => {
     context.Response.Redirect("/payment/return");
 });
 
+// Endpoint de confirmación final para Webpay
+app.MapGet("/payment/final", () =>
+    Results.Content(@"<html>
+        <body style='font-family: sans-serif; text-align: center; padding-top: 50px;'>
+            <h2>✅ ¡Pago procesado!</h2>
+            <p>Puedes volver a la aplicación para descargar tu certificado.</p>
+            <p style='font-size: 0.9em; color: #888;'>Esta es una página de confirmación.</p>
+        </body>
+    </html>", "text/html")
+);
+
 
 
 app.Run();
